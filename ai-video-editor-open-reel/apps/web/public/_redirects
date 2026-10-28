@@ -1,1 +1,3 @@
+/api/* https://ai-video-generator-po6d.onrender.com/api/:splat 200
+/storage/* https://ai-video-generator-po6d.onrender.com/storage/:splat 200
 /* /index.html 200
