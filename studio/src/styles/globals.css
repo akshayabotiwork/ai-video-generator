@@ -1,0 +1,105 @@
+/* ============================================================
+   GLOBAL RESET + BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root {
+  /* ── Background Palette ── */
+  --bg-app:        #0B0B10;
+  --bg-panel:      #111118;
+  --bg-surface:    #18181F;
+  --bg-elevated:   #1E1E28;
+  --bg-hover:      #252534;
+  --bg-active:     #2A2A3C;
+
+  /* ── Border ── */
+  --border:        #252535;
+  --border-bright: #3A3A50;
+
+  /* ── Accent ── */
+  --accent:        #5B6EF5;
+  --accent-hover:  #7086FF;
+  --accent-dim:    rgba(91, 110, 245, 0.15);
+  --amber:         #F59E0B;
+  --amber-dim:     rgba(245, 158, 11, 0.2);
+  --green:         #22C55E;
+  --green-dim:     rgba(34, 197, 94, 0.15);
+  --red:           #EF4444;
+  --red-dim:       rgba(239, 68, 68, 0.15);
+  --pink:          #EC4899;
+
+  /* ── Text ── */
+  --text-1:        #EEEEFF;
+  --text-2:        #9090B0;
+  --text-3:        #55556A;
+  --text-inv:      #0B0B10;
+
+  /* ── Track Colors ── */
+  --track-video:   #5B6EF5;
+  --track-audio:   #22C55E;
+  --track-music:   #EC4899;
+  --track-overlay: #F59E0B;
+
+  /* ── Radius ── */
+  --r-sm:  4px;
+  --r-md:  8px;
+  --r-lg:  12px;
+  --r-xl:  16px;
+
+  /* ── Spacing ── */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 16px;
+  --gap-xl: 24px;
+
+  /* ── Font ── */
+  --font-ui:   'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ── Shadows ── */
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 20px rgba(0,0,0,0.6);
+  --shadow-lg:  0 8px 40px rgba(0,0,0,0.8);
+
+  /* ── Transitions ── */
+  --t-fast:   100ms ease;
+  --t-normal: 180ms ease;
+  --t-slow:   300ms ease;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+/* ── Selection ── */
+::selection { background: var(--accent-dim); color: var(--text-1); }
+
+/* ── Utility Classes ── */
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm { gap: var(--gap-sm); }
+.gap-md { gap: var(--gap-md); }
+.text-muted { color: var(--text-2); }
+.text-tiny { font-size: 11px; }
+.text-sm { font-size: 12px; }
+.text-base { font-size: 13px; }
+.font-mono { font-family: var(--font-mono); }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.no-select { user-select: none; }

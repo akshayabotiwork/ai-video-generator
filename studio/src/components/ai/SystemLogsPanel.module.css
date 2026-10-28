@@ -1,0 +1,156 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 12px;
+  gap: 10px;
+  color: var(--text-1);
+  overflow: hidden;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #3fb950;
+  background: rgba(63, 185, 80, 0.12);
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(63, 185, 80, 0.3);
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3fb950;
+  box-shadow: 0 0 6px #3fb950;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+.scrollLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn {
+  padding: 4px 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-2);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--border-focus);
+  color: #fff;
+}
+
+.filterSelect {
+  padding: 4px 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-1);
+  font-size: 11px;
+  outline: none;
+}
+
+.logStream {
+  flex: 1;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logEntry {
+  display: flex;
+  gap: 6px;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.logTime {
+  color: #6e7681;
+  flex-shrink: 0;
+}
+
+.logLevel {
+  font-weight: 700;
+  flex-shrink: 0;
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.level_INFO {
+  color: #58a6ff;
+  background: rgba(88, 166, 255, 0.1);
+}
+
+.level_SUCCESS {
+  color: #3fb950;
+  background: rgba(63, 185, 80, 0.1);
+}
+
+.level_WARN {
+  color: #d29922;
+  background: rgba(210, 153, 34, 0.1);
+}
+
+.level_ERROR {
+  color: #f85149;
+  background: rgba(248, 81, 73, 0.1);
+}
+
+.logSource {
+  color: #bc8cff;
+  flex-shrink: 0;
+}
+
+.logMsg {
+  color: #c9d1d9;
+}

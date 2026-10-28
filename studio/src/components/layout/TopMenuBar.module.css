@@ -1,0 +1,304 @@
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.brandIcon { font-size: 16px; }
+.brandName { font-size: 13px; font-weight: 700; color: var(--text-1); letter-spacing: -0.02em; }
+.pro { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: 0.05em; vertical-align: super; }
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.spacer { flex: 1; }
+
+.menuGroup { display: flex; align-items: center; gap: 2px; }
+
+.menuBtn {
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  color: var(--text-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--t-fast), background var(--t-fast);
+  white-space: nowrap;
+}
+.menuBtn:hover { color: var(--text-1); background: var(--bg-hover); }
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 26px;
+  border-radius: var(--r-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-2);
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.iconBtn:hover:not(:disabled) { color: var(--text-1); background: var(--bg-hover); }
+.iconBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.toolGroup { display: flex; align-items: center; gap: 2px; }
+.toolBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  color: var(--text-3);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+.toolBtn:hover { color: var(--text-1); background: var(--bg-hover); }
+.toolBtn.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: var(--r-md);
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--accent), #7B4EFF);
+  border: none;
+  cursor: pointer;
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+.exportBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+.exportBtn:active { transform: translateY(0); }
+
+.aspectToggle {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 2px;
+}
+
+.aspectBtn {
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 3px;
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+}
+
+.aspectBtn.active {
+  background: var(--bg-elevated);
+  color: var(--text-1);
+}
+
+.aiDirectorBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #f59e0b, #ec4899);
+  border: none;
+  cursor: pointer;
+}
+
+.logsBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  background: #3b82f6;
+  color: #fff;
+  border-radius: 10px;
+  padding: 1px 5px;
+  margin-left: 4px;
+}
+
+.exportButtonGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.exportSettingsBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  border-radius: var(--r-md);
+  font-size: 11px;
+  color: var(--text-2);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+.exportSettingsBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.exportProgressContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 8px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--r-md);
+  max-width: 320px;
+}
+
+.exportProgressInfo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+
+.exportSpin {
+  color: #10b981;
+  font-size: 12px;
+  animation: pulseSpin 1s infinite alternate;
+}
+
+@keyframes pulseSpin {
+  from { opacity: 0.5; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1.1); }
+}
+
+.exportPercent {
+  font-weight: 700;
+  color: #10b981;
+  min-width: 28px;
+}
+
+.exportStage {
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-2);
+  font-size: 10px;
+}
+
+.exportProgressBar {
+  width: 50px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.exportProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  transition: width 0.3s ease;
+}
+
+.cancelExportBtn {
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: #ef4444;
+  border: none;
+  cursor: pointer;
+  transition: background var(--t-fast);
+  white-space: nowrap;
+}
+.cancelExportBtn:hover {
+  background: #dc2626;
+}
+
+.exportReadyContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 3px 8px;
+  border-radius: var(--r-md);
+}
+
+.downloadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: #10b981;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background var(--t-fast);
+}
+.downloadBtn:hover {
+  background: #059669;
+}
+
+.previewBtn {
+  font-size: 11px;
+  padding: 3px 7px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
+  color: var(--text-1);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.previewBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.clearExportBtn {
+  font-size: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.clearExportBtn:hover {
+  color: var(--text-1);
+}
+
+

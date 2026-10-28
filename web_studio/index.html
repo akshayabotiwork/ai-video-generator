@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Video Studio Pro — Multi-Track NLE Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="editor-body">
+
+  <!-- ==============================================================================
+       TOP EDITOR HEADER (DAW / NLE STUDIO BAR)
+       ============================================================================== -->
+  <header class="editor-header">
+    <div class="editor-header-left">
+      <div class="editor-brand">
+        <div class="editor-brand-icon">⚡</div>
+        <div class="editor-brand-info">
+          <h1>AI Video Studio <span class="pro-tag">PRO</span></h1>
+          <span class="sub-tag">Continuous Audio & Single-Timeline Arranger</span>
+        </div>
+      </div>
+      <div class="project-title-box">
+        <input type="text" id="projectTitle" class="editor-title-input" value="India vs WI 1st ODI Historic Win"
+          placeholder="Project Name...">
+      </div>
+    </div>
+
+    <div class="editor-header-center">
+      <!-- Aspect Ratio Switcher -->
+      <div class="aspect-ratio-toggle">
+        <button class="aspect-btn active" id="btnAspect169" onclick="setAspectRatio('16:9')">📺 16:9 Landscape</button>
+        <button class="aspect-btn" id="btnAspect916" onclick="setAspectRatio('9:16')">📱 9:16 Shorts/Reels</button>
+        <input type="hidden" id="aspectRatioSelect" value="16:9">
+      </div>
+
+      <!-- Quick Category & Theme Selectors -->
+      <div class="header-select-group">
+        <select id="categorySelect" class="editor-compact-select">
+          <option value="sports" selected>Sports & Cricket</option>
+          <option value="news">Breaking News</option>
+          <option value="tech">Technology & AI</option>
+          <option value="business">Business & Markets</option>
+          <option value="politics">Politics & Wire</option>
+          <option value="history">Historical & Doc</option>
+        </select>
+
+        <select id="themeSelect" class="editor-compact-select">
+          <option value="sports_center" selected>Sports Central (Orange/Gold)</option>
+          <option value="breaking_news">Breaking News (Red/White)</option>
+          <option value="tech_pulse">Tech Pulse (Cyan/Slate)</option>
+          <option value="financial_wire">Financial Wire (Navy/Emerald)</option>
+          <option value="documentary">Doc & History (Amber/Sepia)</option>
+        </select>
+
+        <select id="voiceSelect" class="editor-compact-select">
+          <option value="hi-IN-MadhurNeural" selected>Hindi (IN - Madhur / Male)</option>
+          <option value="hi-IN-SwaraNeural">Hindi (IN - Swara / Female)</option>
+          <option value="en-US-GuyNeural">English (US - Guy / Male)</option>
+          <option value="en-US-AriaNeural">English (US - Aria / Female)</option>
+          <option value="gu-IN-NiranjanNeural">Gujarati (IN - Niranjan)</option>
+          <option value="gu-IN-DhwaniNeural">Gujarati (IN - Dhwani)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="editor-header-right">
+      <div class="engine-badge live">
+        <div class="live-dot"></div>
+        <span>Single-Pass Engine</span>
+      </div>
+      <button id="mainExportBtn" class="btn-export-main" onclick="handleRenderVideo()">
+        <span>🚀</span> Export 1080p Video
+      </button>
+      <button id="systemLogsBtn" class="btn-system-logs" onclick="toggleSystemLogs()"
+        title="Toggle System Activity Logs">
+        <span>📜</span> System Logs
+        <span id="logsBadgeCount" class="logs-badge-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==============================================================================
+       MAIN WORKSPACE (SPLIT: LEFT TOOLBOX + RIGHT PREVIEW MONITOR)
+       ============================================================================== -->
+  <div class="editor-workspace">
+
+    <!-- Left Tool & Asset Drawer -->
+    <aside class="editor-sidebar">
+      <!-- Sidebar Tab Icons -->
+      <nav class="sidebar-tab-nav">
+        <button class="side-tab-btn active" id="tabNavScript" onclick="switchSidebarTab('script')"
+          title="Script & AI Director">
+          <span>📝</span>
+          <label>Script</label>
+        </button>
+        <button class="side-tab-btn" id="tabNavMedia" onclick="switchSidebarTab('media')" title="Media Bin & Search">
+          <span>🖼️</span>
+          <label>Media</label>
+        </button>
+        <button class="side-tab-btn" id="tabNavTrans" onclick="switchSidebarTab('trans')" title="Transitions & Motion">
+          <span>🔀</span>
+          <label>Motion</label>
+        </button>
+        <button class="side-tab-btn" id="tabNavOverlays" onclick="switchSidebarTab('overlays')"
+          title="Headlines & Captions">
+          <span>🏷️</span>
+          <label>Titles</label>
+        </button>
+      </nav>
+
+      <!-- Sidebar Content Panes -->
+      <div class="sidebar-content-area">
+
+        <!-- PANE 1: Script & AI Director -->
+        <div id="paneScript" class="sidebar-pane active">
+          <div class="pane-header">
+            <h3>📝 News Script & AI Director</h3>
+            <span class="pane-subtitle">Enter full script for continuous voiceover</span>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="preset-chips">
+            <span class="preset-label">Presets:</span>
+            <button class="chip" onclick="loadScriptPreset('hindi_cricket')">🏏 भारत vs WI (Hindi)</button>
+            <button class="chip" onclick="loadScriptPreset('sports')">🏏 Kohli 2012</button>
+            <button class="chip" onclick="loadScriptPreset('tech')">🤖 Quantum AI</button>
+            <button class="chip" onclick="loadScriptPreset('breaking')">🌍 Geneva Climate</button>
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label">Raw Script / Story (Hindi / English / Any)</label>
+            <textarea id="scriptText" class="editor-textarea"
+              placeholder="Enter your full raw script here..."></textarea>
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label">SERP API Key <small
+                style="color:var(--text-dim);">(Preconfigured)</small></label>
+            <input type="password" id="serpApiKey" class="editor-input" placeholder="SERP API Key (optional)">
+          </div>
+
+          <button id="parseScriptBtn" class="btn-action-primary" onclick="handleParseScript()">
+            <span>✨</span> Generate Storyboard & Timeline
+          </button>
+        </div>
+
+        <!-- PANE 2: Media Bin & Search -->
+        <div id="paneMedia" class="sidebar-pane">
+          <div class="pane-header">
+            <h3>🖼️ Media Bin & SERP Search</h3>
+            <span class="pane-subtitle">Visuals discovered for each scene</span>
+          </div>
+
+          <div class="media-search-bar">
+            <input type="text" id="sidebarSearchQuery" class="editor-input"
+              placeholder="Search Google Images with SERP API...">
+            <button class="btn-action-secondary" onclick="executeSidebarSearch()">Search</button>
+          </div>
+
+          <div id="sidebarMediaGrid" class="media-bin-grid">
+            <div class="empty-media-msg">Generate storyboard to populate scene photos or search above.</div>
+          </div>
+        </div>
+
+        <!-- PANE 3: Transitions & Motion -->
+        <div id="paneTrans" class="sidebar-pane">
+          <div class="pane-header">
+            <h3>🔀 Transitions & Ken Burns Motion</h3>
+            <span class="pane-subtitle">Smooth crossfades & cinematic camera moves</span>
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label">Global Default Transition:</label>
+            <select id="globalTransitionSelect" class="editor-select"
+              onchange="handleGlobalTransitionChange(this.value)">
+              <option value="fade" selected>Crossfade / Dissolve (fade)</option>
+              <option value="slideleft">Slide Left (slideleft)</option>
+              <option value="slideright">Slide Right (slideright)</option>
+              <option value="wipeleft">Wipe Left (wipeleft)</option>
+              <option value="wiperight">Wipe Right (wiperight)</option>
+              <option value="smoothleft">Smooth Push Left (smoothleft)</option>
+              <option value="circlecrop">Circle Iris Open (circlecrop)</option>
+              <option value="dissolve">Dissolve Grain (dissolve)</option>
+              <option value="radial">Radial Clock Sweep (radial)</option>
+              <option value="zoomin">Zoom In Cut (zoomin)</option>
+            </select>
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label">Transition Duration (seconds):</label>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <input type="range" id="globalTransDurationSlider" min="0.2" max="1.5" step="0.1" value="0.5"
+                class="editor-slider" oninput="handleTransDurationSlider(this.value)">
+              <span id="transDurationValueLabel" class="slider-badge">0.5s</span>
+            </div>
+          </div>
+
+          <div class="editor-form-group" style="margin-top:16px;">
+            <label class="editor-label">⏱️ Per-Scene Time Interval (Max Shot Duration):</label>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <input type="range" id="maxShotDurationSlider" min="1.5" max="6.0" step="0.5" value="3.0"
+                class="editor-slider" oninput="handleMaxShotDurationSlider(this.value)">
+              <span id="maxShotDurationValueLabel" class="slider-badge">3.0s</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 4px;">
+              Limits any single image to max this duration. Longer scenes automatically cycle multiple images with Ken
+              Burns motion.
+            </span>
+          </div>
+
+          <div class="editor-form-group" style="margin-top:16px;">
+            <label class="editor-label">Selected Scene Camera Motion:</label>
+            <select id="activeSceneMotionSelect" class="editor-select" onchange="updateActiveSceneMotion(this.value)">
+              <option value="zoom_in">Ken Burns: Slow Zoom In (Center)</option>
+              <option value="zoom_out">Ken Burns: Slow Zoom Out</option>
+              <option value="pan_left">Ken Burns: Cinematic Pan Left</option>
+              <option value="pan_right">Ken Burns: Cinematic Pan Right</option>
+              <option value="static">Static Canvas (No Motion)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PANE 4: Overlays & Lower-Thirds -->
+        <div id="paneOverlays" class="sidebar-pane">
+          <div class="pane-header">
+            <h3>🏷️ Broadcast Titles & Lower-Thirds</h3>
+            <span class="pane-subtitle">Live TV headline tickers and badges</span>
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label">Lower-Third Headline (Active Scene):</label>
+            <input type="text" id="activeHeadlineInput" class="editor-input" placeholder="HEADLINE IN ALL CAPS..."
+              oninput="updateActiveSceneHeadline(this.value)">
+          </div>
+
+          <div class="editor-form-group">
+            <label class="editor-label">Category Badge Tag:</label>
+            <input type="text" id="activeCategoryTagInput" class="editor-input" placeholder="BREAKING / SPORTS / TECH"
+              oninput="updateActiveSceneTag(this.value)">
+          </div>
+
+          <div class="toggles-box" style="margin-top:20px;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="chkSubtitles" checked> Include Synchronized Captions
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="chkTicker"> Include News Ticker & Badges
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="chkMusic" checked> Include News Ambient Soundbed
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Center/Right Preview Viewport Monitor -->
+    <main class="editor-main-stage">
+
+      <!-- Video Monitor Screen -->
+      <div class="monitor-container" id="monitorContainer">
+        <div class="monitor-screen" id="monitorScreen">
+
+          <!-- Live Preview Canvas -->
+          <div id="canvasViewport" class="canvas-viewport">
+            <img id="previewCanvasImage" src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1280&q=80"
+              alt="Preview Frame">
+
+            <!-- Simulated Lower-Third Broadcast Bar Overlay (Disabled by default) -->
+            <div id="simulatedLowerThird" class="sim-lower-third" style="display:none;">
+              <div id="simTagBadge" class="sim-tag-badge">SPORTS DESK</div>
+              <div id="simHeadlineBar" class="sim-headline-bar">
+                <span id="simHeadlineText">VIRAT KOHLI HISTORIC MASTERCLASS</span>
+              </div>
+            </div>
+
+            <!-- Simulated Subtitles -->
+            <div id="simSubtitlesOverlay" class="sim-subtitles">
+              <span id="simSubtitlesText">भारत ने वेस्टइंडीज के खिलाफ शानदार जीत दर्ज की</span>
+            </div>
+          </div>
+
+          <!-- Video Player (When rendered) -->
+          <video id="finalRenderedVideo" class="final-video-player" controls style="display:none;"></video>
+        </div>
+
+        <!-- Monitor Info & Active Scene Badge -->
+        <div class="monitor-info-bar">
+          <div class="monitor-info-left">
+            <span id="activeSceneBadge" class="scene-active-pill">🎬 Scene 1 of 3</span>
+            <span id="activeSceneTimeWindow" class="timewindow-pill">⏱️ 00:00.0 - 00:03.0</span>
+            <span id="activeTransitionBadge" class="trans-pill">🔀 Fade (0.5s)</span>
+          </div>
+          <div class="monitor-info-right">
+            <button id="btnDownloadRender" class="btn-download-sm" style="display:none;"
+              onclick="downloadRenderedVideo()">⬇️ Download MP4</button>
+            <span class="resolution-badge">1080p FHD</span>
+          </div>
+        </div>
+
+        <!-- Playback Transport Controls -->
+        <div class="transport-bar">
+          <div class="transport-buttons">
+            <button class="transport-btn" onclick="jumpToFirstScene()" title="Start">⏮️</button>
+            <button class="transport-btn" onclick="jumpStep(-1.0)" title="-1s">⏪</button>
+            <button class="transport-btn play-btn" id="playPauseBtn" onclick="togglePlayPreview()"
+              title="Play Preview">▶️</button>
+            <button class="transport-btn" onclick="jumpStep(1.0)" title="+1s">⏩</button>
+            <button class="transport-btn" onclick="jumpToLastScene()" title="End">⏭️</button>
+          </div>
+          <div class="timecode-display" id="timecodeDisplay">00:00.00 / 00:12.10</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ==============================================================================
+       BOTTOM TIMELINE (FULL-WIDTH PRO NLE TIMELINE EDITOR)
+       ============================================================================== -->
+  <section class="editor-timeline-section">
+    <!-- Timeline Control Bar -->
+    <div class="timeline-ctrl-bar">
+      <div class="timeline-ctrl-left">
+        <span class="timeline-clock" id="scrubberClock">00:00.0</span>
+        <span class="timeline-stat-pill" id="tlTotalDuration">⏱️ Total: 0.0s</span>
+        <span class="timeline-stat-pill" id="tlSceneCount">🎬 0 Clips</span>
+        <span class="timeline-stat-pill audio-consistent-pill">🎙️ Continuous Master Voiceover</span>
+      </div>
+
+      <div class="timeline-ctrl-right">
+        <div class="zoom-controls">
+          <span style="font-size:11px; color:var(--text-dim);">Zoom:</span>
+          <button class="zoom-btn" onclick="adjustTimelineZoom(-0.2)">−</button>
+          <button class="zoom-btn" onclick="adjustTimelineZoom(0.2)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-Track Scrollable Canvas -->
+    <div class="timeline-editor-scrollbox" id="timelineScrollArea">
+
+      <!-- Time Ruler -->
+      <div class="timeline-ruler" id="editorTimeRuler"></div>
+
+      <!-- Playhead Red Needle Line -->
+      <div id="timelinePlayhead" class="timeline-playhead">
+        <div class="playhead-head"></div>
+        <div class="playhead-line"></div>
+      </div>
+
+      <!-- TRACK 1: V1 - Visuals & Multiple Images with Transitions -->
+      <div class="track-row" id="trackVisuals">
+        <div class="track-header">
+          <span class="track-tag-v">V1</span>
+          <span class="track-name">Visuals</span>
+        </div>
+        <div class="track-lane" id="laneVisuals">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- TRACK 2: V2 - Lower-Third Graphics & Ticker -->
+      <div class="track-row" id="trackOverlays">
+        <div class="track-header">
+          <span class="track-tag-v">V2</span>
+          <span class="track-name">Graphics</span>
+        </div>
+        <div class="track-lane" id="laneOverlays">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- TRACK 3: CC - Synchronized Subtitles -->
+      <div class="track-row" id="trackCaptions">
+        <div class="track-header">
+          <span class="track-tag-cc">CC</span>
+          <span class="track-name">Subtitles</span>
+        </div>
+        <div class="track-lane" id="laneCaptions">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- TRACK 4: A1 - Continuous Voiceover (Master Narration) -->
+      <div class="track-row" id="trackVoice">
+        <div class="track-header">
+          <span class="track-tag-a">A1</span>
+          <span class="track-name">Voiceover</span>
+        </div>
+        <div class="track-lane" id="laneVoiceover">
+          <!-- Injected via JS as one continuous waveform -->
+        </div>
+      </div>
+
+      <!-- TRACK 5: A2 - Background Music & News Bed -->
+      <div class="track-row" id="trackMusic">
+        <div class="track-header">
+          <span class="track-tag-a">A2</span>
+          <span class="track-name">News Bed</span>
+        </div>
+        <div class="track-lane" id="laneMusic">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       EXPORT & RENDERING MODAL OVERLAY
+       ============================================================================== -->
+  <div id="renderModal" class="editor-modal">
+    <div class="editor-modal-box">
+      <div class="modal-title-row">
+        <span style="font-weight:700; font-size:16px;">⚙️ Single-Pass Broadcast Video Rendering</span>
+        <button onclick="closeRenderModal()" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-content-body">
+        <div class="render-animation-icon">🎬</div>
+        <div class="progress-bar-container">
+          <div id="renderProgressBar" class="progress-bar-active"></div>
+        </div>
+        <div id="renderStageLabel" class="render-stage-text">Initializing Single-Pass FFmpeg Engine...</div>
+        <p class="render-sub-text">
+          Applying Ken Burns camera motion, seamless xfade transitions, burning subtitles, and mixing continuous master
+          voiceover...
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERP Search Modal -->
+  <div id="serpModal" class="editor-modal">
+    <div class="editor-modal-box" style="max-width:760px;">
+      <div class="modal-title-row">
+        <span style="font-weight:700; font-size:16px;">🔍 Swap Scene Photo via SERP API</span>
+        <button onclick="closeSerpModal()" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-content-body">
+        <div class="modal-search-row">
+          <input type="text" id="modalSearchInput" class="editor-input" placeholder="Search specific photo keyword...">
+          <button class="btn-action-primary" onclick="executeModalSearch()">Search SERP API</button>
+        </div>
+        <div id="modalSearchResultsGrid" class="modal-media-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
+       SYSTEM LOGS SIDEBAR DRAWER (SLIDE-IN FROM RIGHT)
+       ============================================================================== -->
+  <aside id="systemLogsSidebar" class="system-logs-sidebar">
+    <div class="logs-sidebar-header">
+      <div class="logs-title-wrap">
+        <div class="logs-header-icon-box">📜</div>
+        <div>
+          <div class="logs-sidebar-title">
+            <span>System Activity & Logs</span>
+            <span class="logs-pulse-tag">LIVE</span>
+          </div>
+          <div class="logs-subtitle">Real-time pipeline diagnostics, AI Director & FFmpeg stream</div>
+        </div>
+      </div>
+      <div class="logs-header-actions">
+        <button class="logs-action-btn" onclick="clearSystemLogs()" title="Clear Log Output">
+          <span>🗑️</span> Clear
+        </button>
+        <button class="logs-action-btn" onclick="copySystemLogs()" title="Copy Logs to Clipboard">
+          <span>📋</span> Copy
+        </button>
+        <button class="logs-action-btn" onclick="downloadSystemLogs()" title="Download Logs File">
+          <span>💾</span> Save
+        </button>
+        <button class="logs-close-btn" onclick="closeSystemLogs()" title="Close Sidebar">
+          &times;
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter chips and search bar -->
+    <div class="logs-filter-bar">
+      <div class="logs-filter-chips">
+        <button class="log-chip active" data-filter="all" onclick="setLogFilter('all')">
+          All <span class="chip-badge" id="chipCountAll">0</span>
+        </button>
+        <button class="log-chip chip-info" data-filter="info" onclick="setLogFilter('info')">
+          Info <span class="chip-badge" id="chipCountInfo">0</span>
+        </button>
+        <button class="log-chip chip-success" data-filter="success" onclick="setLogFilter('success')">
+          Success <span class="chip-badge" id="chipCountSuccess">0</span>
+        </button>
+        <button class="log-chip chip-warning" data-filter="warning" onclick="setLogFilter('warning')">
+          Warn <span class="chip-badge" id="chipCountWarn">0</span>
+        </button>
+        <button class="log-chip chip-error" data-filter="error" onclick="setLogFilter('error')">
+          Error <span class="chip-badge" id="chipCountError">0</span>
+        </button>
+      </div>
+      <div class="logs-search-box">
+        <span class="logs-search-icon">🔍</span>
+        <input type="text" id="logsSearchQuery" placeholder="Filter by message, tag, or scene..."
+          oninput="handleLogSearch(this.value)">
+        <button id="btnClearSearch" class="btn-clear-search" onclick="clearLogSearch()"
+          style="display:none;">&times;</button>
+      </div>
+    </div>
+
+    <!-- Terminal Output Area -->
+    <div class="logs-viewport" id="logsViewport">
+      <div id="logsContainer" class="logs-container">
+        <!-- Rendered log lines -->
+      </div>
+    </div>
+
+    <!-- Footer Status & Controls -->
+    <div class="logs-sidebar-footer">
+      <div class="logs-footer-left">
+        <label class="logs-toggle-switch">
+          <input type="checkbox" id="chkAutoScroll" checked>
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">Auto-scroll</span>
+        </label>
+        <button class="logs-footer-mini-btn" onclick="scrollLogsToBottom()" title="Jump to bottom">
+          ⬇️ Bottom
+        </button>
+      </div>
+      <div class="logs-footer-stats" id="logsFooterStats">
+        0 logs recorded
+      </div>
+    </div>
+  </aside>
+
+  <!-- Sidebar Backdrop -->
+  <div id="systemLogsBackdrop" class="system-logs-backdrop" onclick="closeSystemLogs()"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+
+</html>

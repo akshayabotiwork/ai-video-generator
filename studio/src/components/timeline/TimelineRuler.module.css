@@ -1,0 +1,52 @@
+.ruler {
+  flex: 1;
+  position: relative;
+  height: 28px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg-surface);
+  user-select: none;
+}
+
+.rulerInner { position: absolute; top: 0; left: 0; height: 100%; }
+
+.tick {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: none;
+}
+.tickLine {
+  width: 1px;
+  height: 8px;
+  background: var(--border-bright);
+}
+.tickLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-3);
+  margin-top: 1px;
+  margin-left: 2px;
+  white-space: nowrap;
+}
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--amber);
+  pointer-events: none;
+  z-index: 20;
+}
+.playheadHead {
+  position: absolute;
+  top: 0;
+  left: -5px;
+  width: 11px;
+  height: 11px;
+  background: var(--amber);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}

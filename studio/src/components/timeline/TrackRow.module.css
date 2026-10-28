@@ -1,0 +1,77 @@
+.trackRow {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  border-left: 3px solid;
+  flex-shrink: 0;
+  gap: 4px;
+}
+.headerLeft { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.trackIcon { font-size: 13px; flex-shrink: 0; }
+.trackName {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.headerControls { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.controlBtn {
+  padding: 2px;
+  font-size: 11px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  opacity: 0.6;
+  transition: opacity var(--t-fast);
+}
+.controlBtn:hover { opacity: 1; }
+.controlBtn.dim { opacity: 0.2; }
+.controlBtn.locked { opacity: 1; color: var(--amber); }
+
+.body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 79px,
+    var(--border) 79px,
+    var(--border) 80px
+  );
+}
+.body.bladeCursor { cursor: crosshair; }
+.bodyInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  min-width: 100%;
+}
+
+.dropHint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text-3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-normal);
+}
+.body:empty .dropHint,
+.bodyInner:empty ~ .dropHint { opacity: 1; }
