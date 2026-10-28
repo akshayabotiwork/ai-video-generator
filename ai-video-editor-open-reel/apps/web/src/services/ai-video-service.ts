@@ -1,7 +1,7 @@
 import { useProjectStore } from "../stores/project-store";
 import { toast } from "../stores/notification-store";
 import { getTransitionBridge } from "../bridges/transition-bridge";
-import type { TransitionType, Transition, Keyframe, Clip, Track } from "@openreel/core";
+import type { TransitionType, Transition, Keyframe, Clip } from "@openreel/core";
 import type { VideoEffectType } from "../bridges/effects-bridge";
 
 export const VALID_OPENREEL_TRANSITIONS: readonly TransitionType[] = [
@@ -792,7 +792,7 @@ export async function generateAndLoadAIStory(
                 ...defaultParams,
                 direction: transDir,
               };
-              const res = bridge.createTransition(clipA, clipB, transType, transDur, params);
+              const res = bridge.createTransition(clipA, clipB, transType, transDur, params as any);
               if (res.success && res.transitionId) {
                 const transObj = bridge.getTransition(res.transitionId);
                 if (transObj) {
@@ -879,15 +879,13 @@ export async function syncTimelineUsingAudio(
     const projectStore = useProjectStore.getState();
     const project = projectStore.getFullProject();
 
-    // 1. Locate the selected audio clip and track
+    // 1. Locate the selected audio clip
     let audioClip: Clip | undefined;
-    let audioTrack: Track | undefined;
 
     for (const track of project.timeline.tracks) {
       const found = track.clips.find((c) => c.id === audioClipId);
       if (found) {
         audioClip = found;
-        audioTrack = track;
         break;
       }
     }
