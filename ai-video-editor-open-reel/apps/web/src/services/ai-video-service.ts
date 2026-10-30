@@ -285,6 +285,16 @@ export interface GenerateProjectParams {
 }
 
 /**
+ * Backend API Base URL:
+ * - Reads from VITE_BACKEND_URL (e.g. "https://ai-video-generator-po6d.onrender.com").
+ * - If not configured (e.g. running locally via Vite proxy or on localhost), defaults to ""
+ *   so requests use relative paths like "/api/..." which Vite proxies to localhost:8000.
+ */
+export const BACKEND_BASE_URL: string = (
+  (import.meta.env?.VITE_BACKEND_URL as string | undefined) || ""
+).replace(/\/+$/, "");
+
+/**
  * Normalizes backend local file path to accessible /storage URL
  */
 export function toStorageUrl(rawPath?: string): string {
@@ -294,10 +304,8 @@ export function toStorageUrl(rawPath?: string): string {
   }
   const clean = rawPath.replace(/\\/g, "/");
   const storageIndex = clean.indexOf("storage/");
-  if (storageIndex !== -1) {
-    return "/" + clean.slice(storageIndex);
-  }
-  return `/storage/${clean.replace(/^\//, "")}`;
+  const rel = storageIndex !== -1 ? "/" + clean.slice(storageIndex) : `/storage/${clean.replace(/^\//, "")}`;
+  return BACKEND_BASE_URL ? `${BACKEND_BASE_URL}${rel}` : rel;
 }
 
 /**
@@ -381,7 +389,8 @@ export function mapEffectToOpenReel(
  */
 async function fetchAsFile(url: string, fallbackName: string, defaultMime: string): Promise<File | null> {
   try {
-    const res = await fetch(url);
+    const targetUrl = (url.startsWith("/") && BACKEND_BASE_URL) ? `${BACKEND_BASE_URL}${url}` : url;
+    const res = await fetch(targetUrl);
     if (!res.ok) {
       console.warn(`[AI Studio] Failed to fetch media from ${url}: ${res.statusText}`);
       return null;
@@ -428,7 +437,7 @@ export async function generateAndLoadAIStory(
   try {
     onProgress?.("Contacting AI Director (Segmenting script, selecting OpenReel effects & pacing)...");
 
-    const response = await fetch("/api/parse-script", {
+    const response = await fetch(`${BACKEND_BASE_URL}/api/parse-script`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -880,7 +889,7 @@ export async function syncTimelineUsingAudio(
         const fileName = mediaItem.name || "timeline_audio.mp3";
         formData.append("file", blob, fileName);
 
-        const uploadRes = await fetch("/api/upload-audio", {
+        const uploadRes = await fetch(`${BACKEND_BASE_URL}/api/upload-audio`, {
           method: "POST",
           body: formData,
         });
@@ -911,7 +920,7 @@ export async function syncTimelineUsingAudio(
     onProgress?.(`Analyzing audio speech pauses with Whisper for ${visualClips.length} visual cuts...`);
 
     // 4. Call align backend
-    const alignRes = await fetch("/api/align-custom-audio", {
+    const alignRes = await fetch(`${BACKEND_BASE_URL}/api/align-custom-audio`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
