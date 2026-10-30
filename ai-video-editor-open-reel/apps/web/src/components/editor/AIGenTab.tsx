@@ -8,15 +8,12 @@ import {
   Wand2,
   FileStack,
   Volume2,
-  Sparkles,
 } from "@/icons/lucide-compat";
 import { ToolcraftButton as Button } from "@openreel/ui";
 import { ToolcraftClickableCard as ClickableCard } from "@openreel/ui";
 import { ToolcraftText as Text } from "@openreel/ui";
-// NOTE: Ye AI feature is app ka nahi hai - disabled
-// import { AutoCaptionPanel } from "./inspector/AutoCaptionPanel";
-// import { TextToSpeechPanel } from "./inspector/TextToSpeechPanel";
-import { AINewsStudioPanel as AIVideoStudioPanel } from "./inspector/AIVideoStudioPanel";
+// NOTE: AI Video Studio is now accessed directly via the Action Rail AI button
+// import { AINewsStudioPanel as AIVideoStudioPanel } from "./inspector/AIVideoStudioPanel";
 import { FilterPresetsPanel } from "./inspector/FilterPresetsPanel";
 import { MusicLibraryPanel } from "./inspector/MusicLibraryPanel";
 import { TemplatesBrowserPanel } from "./inspector/TemplatesBrowserPanel";
@@ -124,8 +121,9 @@ export const AIGenTab: React.FC = () => {
 
   const renderActivePanel = () => {
     switch (activeFeature) {
-      case "ai-news":
-        return <AIVideoStudioPanel />;
+      // NOTE: AI Video Studio is accessed directly via the Action Rail AI button
+      // case "ai-news":
+      //   return <AIVideoStudioPanel />;
       case "templates":
         return <TemplatesBrowserPanel />;
       // NOTE: Ye AI feature is app ka nahi hai - disabled
@@ -169,57 +167,12 @@ export const AIGenTab: React.FC = () => {
             <Wand2 size={24} className="text-primary" aria-hidden />
           </div>
           <Text as="h2" type="label" weight="bold" display="block">
-            AI-Powered Tools
+            Studio Tools & Presets
           </Text>
           <Text type="supporting" color="secondary" display="block" className="mt-1 text-[11px]">
-            Automate your editing with intelligent features
+            Templates, cinematic filters, audio library & tools
           </Text>
         </div>
-
-        <FeatureSection title="Content Generation" icon={Wand2}>
-          <FeatureCard
-            icon={Sparkles}
-            title="AI Video Studio"
-            description="Generate scenes, narration & visuals from any prompt, story or script"
-            iconColor="text-amber-400"
-            iconBg="bg-amber-500/20"
-            activeBorder="border-amber-500/50"
-            activeBg="bg-amber-500/10"
-            activeRing="ring-amber-500/30"
-            isActive={activeFeature === "ai-news"}
-            onClick={() => handleFeatureClick("ai-news")}
-          />
-          {/* NOTE: Ye AI feature is app ka nahi hai - Text to Speech ko UI se completely remove kiya gaya hai */}
-          {/*
-          <FeatureCard
-            icon={Mic}
-            title="Text to Speech"
-            description="Generate natural voiceovers from text"
-            iconColor="text-blue-400"
-            iconBg="bg-blue-500/20"
-            activeBorder="border-blue-500/50"
-            activeBg="bg-blue-500/10"
-            activeRing="ring-blue-500/30"
-            isActive={activeFeature === "tts"}
-            onClick={() => handleFeatureClick("tts")}
-          />
-          */}
-          {/* NOTE: Ye AI feature is app ka nahi hai - Auto Captions ko UI se completely remove kiya gaya hai */}
-          {/*
-          <FeatureCard
-            icon={Subtitles}
-            title="Auto Captions"
-            description="Automatically generate subtitles from audio"
-            iconColor="text-primary"
-            iconBg="bg-primary/20"
-            activeBorder="border-primary/50"
-            activeBg="bg-primary/10"
-            activeRing="ring-primary/30"
-            isActive={activeFeature === "captions"}
-            onClick={() => handleFeatureClick("captions")}
-          />
-          */}
-        </FeatureSection>
 
         <FeatureSection title="Templates & Presets" icon={FileStack}>
           <FeatureCard
@@ -280,7 +233,7 @@ export const AIGenTab: React.FC = () => {
 
         <div className="pt-2 border-t border-border">
           <Text type="supporting" color="secondary" display="block" justify="center" className="text-[9px]">
-            More AI features coming soon — image generation, auto-edit, and more
+            Templates, cinematic color grades, audio library & multicam tools
           </Text>
         </div>
       </div>

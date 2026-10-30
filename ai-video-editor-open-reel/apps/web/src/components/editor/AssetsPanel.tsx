@@ -93,8 +93,8 @@ const ASSETS_TABS: ReadonlyArray<{
   },
   {
     value: "ai",
-    label: "AI Generate",
-    description: "Generate clips, captions, and assisted edits.",
+    label: "Studio Tools",
+    description: "Templates, filter presets, music library & multicam.",
   },
   {
     value: "recipes",
