@@ -1,10 +1,15 @@
-import os
 import re
-import requests
-from typing import List, Dict, Any, Optional
+from typing import List, Dict
 from core.models import VisualCandidate, SceneData
 from config import SERPAPI_API_KEY
 from core.logger import system_logger
+from core.search import (
+    SearchCache,
+    GoogleDirectSearcher,
+    DuckDuckGoFallbackSearcher,
+    SerpApiFallbackSearcher,
+    WikimediaFallbackSearcher
+)
 
 # Trusted editorial, scientific, historical, and archival domains for relevance weighting
 TRUSTED_EDITORIAL_DOMAINS = {
@@ -48,137 +53,86 @@ TRUSTED_EDITORIAL_DOMAINS = {
 }
 
 class SerpVisualSearcher:
-    """Discovers and ranks contextually relevant visual assets via SERP API & curated fallbacks."""
+    """Orchestrates multi-tier visual search: Direct Google -> DuckDuckGo -> SERP API Fallback -> Wikimedia."""
 
     def __init__(self, api_key: str = ""):
         self.api_key = api_key or SERPAPI_API_KEY
+        self.cache = SearchCache()
+        self.google_searcher = GoogleDirectSearcher()
+        self.ddg_searcher = DuckDuckGoFallbackSearcher()
+        self.serp_searcher = SerpApiFallbackSearcher(api_key=self.api_key)
+        self.wiki_searcher = WikimediaFallbackSearcher()
 
     def search_for_scene(self, scene: SceneData, category: str = "news", limit: int = 10) -> List[VisualCandidate]:
-        """Searches SERP API for exact scene visuals and scores relevance."""
-        candidates: List[VisualCandidate] = []
+        """Discovers visual assets with priority to free direct scraping, falling back to SERP API when needed."""
+        query = scene.search_query.strip()
+        matched_entity = scene.primary_entity or ""
 
-        # 1. Try SERP API if API key is provided
-        if self.api_key:
-            try:
-                system_logger.info("SERP", f"Scene {scene.scene_id}: Querying Google Images for '{scene.search_query}'")
-                candidates = self._search_serp_api(scene, category, limit)
-                system_logger.success("SERP", f"Scene {scene.scene_id}: Found {len(candidates)} photos via Google Images")
-            except Exception as e:
-                system_logger.warning("SERP", f"Scene {scene.scene_id}: SERP API search failed for '{scene.search_query}': {e}. Using fallback archives.")
-        else:
-            system_logger.info("SERP", f"Scene {scene.scene_id}: SERP API key not configured. Searching Wikimedia Commons archive...")
-
-        # 2. If SERP API returns < 3 candidates or no key, search public high-quality archives
-        if len(candidates) < 3:
-            if self.api_key and candidates:
-                system_logger.info("SERP", f"Scene {scene.scene_id}: Expanding visuals with Wikimedia Commons archive for '{scene.primary_entity or scene.search_query}'")
-            elif not self.api_key:
-                system_logger.info("SERP", f"Scene {scene.scene_id}: Searching Wikimedia Commons archive for '{scene.primary_entity or scene.search_query}'")
-            fallback_candidates = self._search_public_archives(scene, category, limit)
-            candidates.extend(fallback_candidates)
-            system_logger.success("SERP", f"Scene {scene.scene_id}: Added {len(fallback_candidates)} verified archive visuals")
-
-        # 3. Deduplicate and score candidates
-        scored_candidates = self._rank_candidates(candidates, scene, category)
-        return scored_candidates[:limit]
-
-    def _query_google_images(self, query: str, matched_entity: str, limit: int) -> List[VisualCandidate]:
-        """Queries Google Images via SERP API for a specific search string."""
-        from serpapi import GoogleSearch
-
-        params = {
-            "engine": "google_images",
-            "q": query,
-            "tbm": "isch",
-            "tbs": "isz:l,itp:photo",  # Large resolution only, photo type
-            "api_key": self.api_key,
-            "num": limit * 2
-        }
-
-        search = GoogleSearch(params)
-        results = search.get_dict()
-        images_results = results.get("images_results", [])
+        # 0. Cache check
+        cached_candidates = self.cache.get(query, category)
+        if cached_candidates:
+            system_logger.info("SERP", f"Scene {scene.scene_id}: In-memory Cache HIT for '{query}'")
+            return cached_candidates[:limit]
 
         candidates: List[VisualCandidate] = []
-        for img in images_results:
-            orig_url = img.get("original") or img.get("thumbnail")
-            if not orig_url:
-                continue
 
-            candidates.append(VisualCandidate(
-                title=img.get("title", ""),
-                source=img.get("source", ""),
-                link=img.get("link", ""),
-                image_url=orig_url,
-                thumbnail_url=img.get("thumbnail", orig_url),
-                width=img.get("original_width"),
-                height=img.get("original_height"),
-                matched_entity=matched_entity
-            ))
-
-        return candidates
-
-    def _search_serp_api(self, scene: SceneData, category: str, limit: int) -> List[VisualCandidate]:
-        """Queries Google Images via SERP API using scene query and fallback secondary angles."""
-        candidates = self._query_google_images(scene.search_query, scene.primary_entity or "", limit)
-
-        # If primary query returned few results, query context-anchored secondary queries
-        if len(candidates) < 3 and scene.secondary_queries:
-            for alt_q in scene.secondary_queries[:2]:
-                try:
-                    alt_candidates = self._query_google_images(alt_q, scene.primary_entity or "", limit)
-                    candidates.extend(alt_candidates)
-                    if len(candidates) >= 4:
-                        break
-                except Exception:
-                    pass
-
-        return candidates
-
-    def _search_public_archives(self, scene: SceneData, category: str, limit: int) -> List[VisualCandidate]:
-        """Queries Wikimedia Commons public sources for verified editorial imagery."""
-        candidates: List[VisualCandidate] = []
-        clean_query = re.sub(r'["\']', '', scene.search_query)
-
-        # Try Wikimedia Commons API targeted by entity or key terms
+        # 1. Primary: Direct Google Images Scraping (Free & Direct)
         try:
-            wiki_query = scene.primary_entity if scene.primary_entity else " ".join(clean_query.split()[:3])
-            wiki_url = "https://commons.wikimedia.org/w/api.php"
-            wiki_params = {
-                "action": "query",
-                "generator": "search",
-                "gsrsearch": wiki_query,
-                "gsrnamespace": 6,  # File namespace
-                "gsrlimit": limit,
-                "prop": "imageinfo",
-                "iiprop": "url|size|extmetadata",
-                "format": "json"
-            }
-            resp = requests.get(wiki_url, params=wiki_params, headers={"User-Agent": "NewsVideoGenerator/1.0"}, timeout=6)
-            if resp.status_code == 200:
-                data = resp.json()
-                pages = data.get("query", {}).get("pages", {})
-                for page_id, page_info in pages.items():
-                    imageinfo = page_info.get("imageinfo", [{}])[0]
-                    file_url = imageinfo.get("url")
-                    if file_url and any(file_url.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".webp"]):
-                        candidates.append(VisualCandidate(
-                            title=page_info.get("title", "").replace("File:", ""),
-                            source="Wikimedia Commons",
-                            link=imageinfo.get("descriptionurl", file_url),
-                            image_url=file_url,
-                            thumbnail_url=imageinfo.get("thumburl", file_url),
-                            width=imageinfo.get("width"),
-                            height=imageinfo.get("height"),
-                            matched_entity=scene.primary_entity
-                        ))
+            system_logger.info("SERP", f"Scene {scene.scene_id}: Querying Google Images directly for '{query}'...")
+            google_candidates = self.google_searcher.search(query, matched_entity, limit)
+            candidates.extend(google_candidates)
+            system_logger.success("SERP", f"Scene {scene.scene_id}: Direct Google search found {len(google_candidates)} photos")
         except Exception as e:
-            print(f"[SerpSearcher] Wikimedia search error: {e}")
+            system_logger.warning("SERP", f"Scene {scene.scene_id}: Direct Google search notice: {e}")
 
-        return candidates
+        # 2. Secondary: Direct DuckDuckGo Images (Zero-block & Unlimited Free Backup)
+        if len(candidates) < 3:
+            try:
+                system_logger.info("SERP", f"Scene {scene.scene_id}: Querying DuckDuckGo direct engine for '{query}'...")
+                ddg_candidates = self.ddg_searcher.search(query, matched_entity, limit)
+                candidates.extend(ddg_candidates)
+                system_logger.success("SERP", f"Scene {scene.scene_id}: DuckDuckGo direct found {len(ddg_candidates)} photos")
+            except Exception as e:
+                system_logger.warning("SERP", f"Scene {scene.scene_id}: DuckDuckGo direct search notice: {e}")
+
+        # 3. Tertiary: SERP API Fallback (Triggered only when direct results are insufficient)
+        if len(candidates) < 3 and self.api_key:
+            try:
+                system_logger.info("SERP", f"Scene {scene.scene_id}: Triggering SERP API fallback for '{query}'...")
+                serp_candidates = self.serp_searcher.search(query, matched_entity, limit)
+                candidates.extend(serp_candidates)
+
+                # Contextual secondary angles if still low results
+                if len(candidates) < 3 and scene.secondary_queries:
+                    for alt_q in scene.secondary_queries[:2]:
+                        alt_cand = self.serp_searcher.search(alt_q, matched_entity, limit)
+                        candidates.extend(alt_cand)
+                        if len(candidates) >= 4:
+                            break
+
+                system_logger.success("SERP", f"Scene {scene.scene_id}: SERP API fallback retrieved {len(serp_candidates)} photos")
+            except Exception as e:
+                system_logger.warning("SERP", f"Scene {scene.scene_id}: SERP API fallback search failed: {e}")
+
+        # 4. Quaternary: Public Archive Fallback (Wikimedia Commons)
+        if len(candidates) < 3:
+            system_logger.info("SERP", f"Scene {scene.scene_id}: Searching Wikimedia Commons archive for '{matched_entity or query}'...")
+            wiki_candidates = self.wiki_searcher.search(query, matched_entity, limit)
+            candidates.extend(wiki_candidates)
+            system_logger.success("SERP", f"Scene {scene.scene_id}: Added {len(wiki_candidates)} verified archive visuals")
+
+        # 5. Deduplicate and score candidates
+        scored_candidates = self._rank_candidates(candidates, scene, category)
+        final_results = scored_candidates[:limit]
+
+        # Save to cache
+        if final_results:
+            self.cache.set(query, category, final_results)
+
+        return final_results
 
     def _rank_candidates(self, candidates: List[VisualCandidate], scene: SceneData, category: str) -> List[VisualCandidate]:
-        """Applies multi-factor scoring to rank image candidates prioritizing person/entity match over generic resolution."""
+        """Applies multi-factor scoring to rank image candidates prioritizing person/entity match."""
         seen_urls = set()
         unique_candidates: List[VisualCandidate] = []
 
@@ -205,18 +159,15 @@ class SerpVisualSearcher:
             # 1. Person / Entity Match (Highest Priority)
             has_person_match = False
             for p_key in person_keys:
-                # Exact person in photo title (Strongest indicator: photo is directly about this person)
                 if p_key in item_title:
                     score += 70.0
                     has_person_match = True
                     break
-                # All tokens of person in title (e.g. 'travis' and 'head')
                 p_words = p_key.split()
                 if len(p_words) > 1 and all(w in item_title for w in p_words):
                     score += 55.0
                     has_person_match = True
                     break
-                # Exact person in description / source / URL
                 if p_key in full_text:
                     score += 40.0
                     has_person_match = True
@@ -226,7 +177,6 @@ class SerpVisualSearcher:
                     has_person_match = True
                     break
 
-            # If a specific person was targeted but no match found in this candidate, penalize
             if person_keys and not has_person_match:
                 score -= 25.0
 
@@ -242,7 +192,7 @@ class SerpVisualSearcher:
             if any(domain in item.link.lower() or domain in item.source.lower() for domain in trusted_domains):
                 score += 10.0
 
-            # 5. Resolution Bonus (Moderate: +5 pts, never overrides person match)
+            # 5. Resolution Bonus
             if item.width and item.width >= 1080:
                 score += 5.0
 
@@ -254,6 +204,5 @@ class SerpVisualSearcher:
             item.relevance_score = max(score, 1.0)
             unique_candidates.append(item)
 
-        # Sort descending by relevance score (Best person matches first)
         unique_candidates.sort(key=lambda x: x.relevance_score, reverse=True)
         return unique_candidates

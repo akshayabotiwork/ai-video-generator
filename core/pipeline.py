@@ -5,8 +5,8 @@ from core.models import VideoProject, SceneData, VisualCandidate
 from core.director import ScriptDirector
 from core.serp_searcher import SerpVisualSearcher
 from core.media_downloader import MediaDownloader
-from core.tts_engine import TTSEngine
-from core.video_composer import VideoComposer
+from core.audio import TTSEngine
+from core.video import VideoComposer
 from core.logger import system_logger
 from config import SERPAPI_API_KEY, DEFAULT_VOICES
 
