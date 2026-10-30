@@ -30,7 +30,8 @@ import { ToolcraftButton as Button } from "@openreel/ui";
 import { ToolcraftIconButton as IconButton } from "@openreel/ui";
 import { ToolcraftSelectableCard as SelectableCard } from "@openreel/ui";
 import { ToolcraftText as Text } from "@openreel/ui";
-import { KieAIImageDialog } from "./kieai/KieAIImageDialog";
+// NOTE: Ye AI feature is app ka nahi hai - disabled
+// import { KieAIImageDialog } from "./kieai/KieAIImageDialog";
 import { loadMediaBlob } from "../../services/media-storage";
 import { useKieAIStore } from "../../stores/kieai-store";
 import { StickerPickerPanel } from "./inspector/StickerPickerPanel";
@@ -261,7 +262,7 @@ const MediaThumbnail: React.FC<{
   onReplace,
   onDragStart,
   onAddToTimeline,
-  onKieAI,
+  onKieAI: _onKieAI,
   onRetryKieAI,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -668,6 +669,7 @@ export const AssetsPanel: React.FC = () => {
 
   // KieAI image generation dialog
   const [kieaiDialog, setKieaiDialog] = useState<{ file: File; previewUrl: string | null } | null>(null);
+  void kieaiDialog;
 
   // Project store
   const {

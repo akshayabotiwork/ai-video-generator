@@ -1,6 +1,4 @@
 import { useState, useCallback, useRef } from "react";
-import { AlertCircle } from "@/icons/lucide-compat";
-import { v4 as uuidv4 } from "uuid";
 import { ToolcraftButton as Button } from "@openreel/ui";
 import { ToolcraftCard as Card } from "@openreel/ui";
 import { ToolcraftDialog as Dialog, ToolcraftDialogHeader as DialogHeader } from "@openreel/ui";
@@ -15,9 +13,7 @@ import {
   type Flux2Input,
   type GrokInput,
   type QwenInput,
-  createImageTask,
 } from "../../../services/kieai/image-generation";
-import { uploadFileStream } from "../../../services/kieai/file-upload";
 import { useProjectStore } from "../../../stores/project-store";
 import { useKieAIStore } from "../../../stores/kieai-store";
 import { ModelPicker } from "./ModelPicker";
@@ -106,111 +102,10 @@ export function KieAIImageDialog({ open, onClose, sourceFile, previewUrl }: Prop
   const handleSubmit = useCallback(async () => {
     setErrorMsg("Ye AI feature is app ka nahi hai. Is feature ko disable kiya gaya hai.");
     setStep("error");
-    return;
-
-    const ac = new AbortController();
-    abortRef.current = ac;
-
-    try {
-      // Upload source image first (for models that need it)
-      let uploadedUrl = "";
-      const needsUpload = selectedModel !== IMAGE_MODELS.Z_IMAGE;
-
-      if (needsUpload) {
-        const uploaded = await uploadFileStream(sourceFile);
-        if (ac.signal.aborted) return;
-        console.log("[KieAI] upload response:", uploaded);
-        // KieAI API may return url under different field names
-        uploadedUrl =
-          uploaded.fileUrl ||
-          uploaded.downloadUrl ||
-          (uploaded as unknown as Record<string, string>)["url"] ||
-          "";
-        if (!uploadedUrl) {
-          throw new Error("Upload succeeded but returned no file URL. Check console for response.");
-        }
-      }
-
-      if (ac.signal.aborted) return;
-
-      // Build model-specific input
-      let input: Parameters<typeof createImageTask>[1];
-      switch (selectedModel) {
-        case IMAGE_MODELS.SEEDREAM:
-          input = { ...seedream, image_urls: [uploadedUrl] };
-          break;
-        case IMAGE_MODELS.Z_IMAGE:
-          input = zimage;
-          break;
-        case IMAGE_MODELS.NANO_BANANA2:
-          input = { ...nanoBanana2, image_input: [uploadedUrl] };
-          break;
-        case IMAGE_MODELS.FLUX2:
-          input = { ...flux2, input_urls: [uploadedUrl] };
-          break;
-        case IMAGE_MODELS.GROK:
-          input = { ...grok, image_urls: [uploadedUrl] };
-          break;
-        case IMAGE_MODELS.QWEN:
-          input = { ...qwen, image_url: uploadedUrl };
-          break;
-        default:
-          throw new Error("Unknown model");
-      }
-
-      console.log("[KieAI] createTask payload:", { model: selectedModel, input });
-      const taskId = await createImageTask(selectedModel, input);
-
-      // Bail out if the user cancelled while the request was in flight
-      if (ac.signal.aborted) return;
-
-      // Create a placeholder in the media library immediately
-      const ext = "png"; // optimistic; poller will use actual blob mime
-      const base = sourceFile.name.replace(/\.[^.]+$/, "");
-      const suggestedName = `${base}_kieai.${ext}`;
-      const mediaId = uuidv4();
-
-      const placeholder = {
-        id: mediaId,
-        name: suggestedName,
-        type: "image" as const,
-        fileHandle: null,
-        blob: null,
-        metadata: {
-          duration: 0,
-          width: 0,
-          height: 0,
-          frameRate: 0,
-          codec: "",
-          sampleRate: 0,
-          channels: 0,
-          fileSize: 0,
-        },
-        thumbnailUrl: previewUrl,
-        waveformData: null,
-        isPlaceholder: true,
-        isPending: true,
-        kieaiTaskId: taskId,
-      };
-
-      addPlaceholderMedia(placeholder);
-      addTask({
-        taskId,
-        mediaId,
-        projectId: project.id,
-        type: "image",
-        suggestedName,
-        createdAt: Date.now(),
-      });
-
-      // Close the dialog immediately — background poller takes it from here
-      handleClose();
-    } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return;
-      setErrorMsg(err instanceof Error ? err.message : String(err));
-      setStep("error");
-    }
-  }, [selectedModel, project, sourceFile, previewUrl, seedream, zimage, nanoBanana2, flux2, grok, qwen, addPlaceholderMedia, addTask, handleClose]);
+    void project;
+    void addPlaceholderMedia;
+    void addTask;
+  }, [project, addPlaceholderMedia, addTask]);
 
   // ─── Derived display ──────────────────────────────────────────────────────
 

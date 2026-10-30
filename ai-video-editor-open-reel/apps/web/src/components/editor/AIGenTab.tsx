@@ -1,7 +1,5 @@
 import React, { useState, useCallback } from "react";
 import {
-  Mic,
-  Subtitles,
   Palette,
   Music,
   Video,
@@ -15,8 +13,9 @@ import {
 import { ToolcraftButton as Button } from "@openreel/ui";
 import { ToolcraftClickableCard as ClickableCard } from "@openreel/ui";
 import { ToolcraftText as Text } from "@openreel/ui";
-import { AutoCaptionPanel } from "./inspector/AutoCaptionPanel";
-import { TextToSpeechPanel } from "./inspector/TextToSpeechPanel";
+// NOTE: Ye AI feature is app ka nahi hai - disabled
+// import { AutoCaptionPanel } from "./inspector/AutoCaptionPanel";
+// import { TextToSpeechPanel } from "./inspector/TextToSpeechPanel";
 import { AINewsStudioPanel as AIVideoStudioPanel } from "./inspector/AIVideoStudioPanel";
 import { FilterPresetsPanel } from "./inspector/FilterPresetsPanel";
 import { MusicLibraryPanel } from "./inspector/MusicLibraryPanel";

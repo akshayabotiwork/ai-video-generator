@@ -97,6 +97,7 @@ export const TextToSpeechPanel: React.FC = () => {
 
   const charCount = text.length;
   const maxChars = 5000;
+  void generateSpeech;
 
   return (
     <div className="space-y-3 w-full min-w-0 max-w-full">

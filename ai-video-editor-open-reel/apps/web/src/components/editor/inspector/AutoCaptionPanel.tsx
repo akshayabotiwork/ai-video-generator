@@ -299,6 +299,7 @@ export const AutoCaptionPanel: React.FC<AutoCaptionPanelProps> = ({
       setIsTranscribing(false);
     }
   }, [clip, mediaItem, runWorker, selectedModel, workerState]);
+  void handleTranscribe;
 
   const handleAddToTimeline = useCallback(async () => {
     if (!clip || segments.length === 0) return;

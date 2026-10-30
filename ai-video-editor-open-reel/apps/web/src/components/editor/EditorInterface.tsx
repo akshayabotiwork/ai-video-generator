@@ -22,9 +22,10 @@ import { useEditorInitialization } from "../../hooks/useEditorInitialization";
 import { useCompactEditor } from "../../hooks/useCompactEditor";
 import "./editor-responsive.css";
 
-const ChatPanel = React.lazy(() =>
-  import("./chat/ChatPanel").then((module) => ({ default: module.ChatPanel })),
-);
+// NOTE: Ye AI feature is app ka nahi hai - disabled
+// const ChatPanel = React.lazy(() =>
+//   import("./chat/ChatPanel").then((module) => ({ default: module.ChatPanel })),
+// );
 
 // Timeline area (bottom band) is sized as a vh fraction so the
 // top workspace (media | stage | inspector) gets the rest. The grid

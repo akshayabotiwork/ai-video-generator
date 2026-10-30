@@ -1,11 +1,12 @@
 import React from "react";
-import { Zap, Loader2, Upload } from "@/icons/lucide-compat";
+import { Zap, Loader2 } from "@/icons/lucide-compat";
 import { ToolcraftButton as Button } from "@openreel/ui";
 import { ToolcraftCard as Card } from "@openreel/ui";
 import { ToolcraftText as Text } from "@openreel/ui";
 import { AutoReframeSection } from "../";
-import { AutoCaptionPanel } from "../AutoCaptionPanel";
-import { CaptionEditorPanel } from "../CaptionEditorPanel";
+// NOTE: Ye AI feature is app ka nahi hai - disabled
+// import { AutoCaptionPanel } from "../AutoCaptionPanel";
+// import { CaptionEditorPanel } from "../CaptionEditorPanel";
 import { AutoEditPanel } from "../../panels/AutoEditPanel";
 import { HighlightExtractorPanel } from "../../panels/HighlightExtractorPanel";
 import { InspectorSection } from "../shell/InspectorSection";
@@ -47,6 +48,10 @@ export const AiTab: React.FC<AiTabProps> = ({
   captionWordsPerLine,
   onCaptionWordsPerLineChange,
 }) => {
+  void handleSRTImport;
+  void srtInputRef;
+  void captionWordsPerLine;
+  void onCaptionWordsPerLineChange;
   return (
     <>
       {/* NOTE: Ye AI feature is app ka nahi hai - Auto-Captions & Subtitle import inspector UI se completely removed */}
