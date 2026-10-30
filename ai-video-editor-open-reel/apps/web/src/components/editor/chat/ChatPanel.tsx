@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ToolcraftButton as Button } from "@openreel/ui";
 import { ToolcraftIconButton as IconButton } from "@openreel/ui";
 import { ToolcraftText as Text } from "@openreel/ui";
-import { Bot, X, Undo2, Plus, History, Sparkles, Settings } from "@/icons/lucide-compat";
+import { Bot, X, Undo2, Plus, History, Sparkles, Settings, AlertCircle } from "@/icons/lucide-compat";
 import { useChatStore } from "../../../stores/chat-store";
 import { useProjectStore } from "../../../stores/project-store";
 import { useSettingsStore } from "../../../stores/settings-store";
@@ -171,6 +171,8 @@ export function ChatPanel({
           )}
         </div>
       </header>
+
+      {/* NOTE: Ye AI feature is app ka nahi hai - disabled */}
       <div className="max-h-[40%] shrink-0 overflow-y-auto">
         <EditSharingPanel disabled={busy} />
       </div>

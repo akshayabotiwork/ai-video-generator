@@ -102,6 +102,8 @@ export const TextToSpeechPanel: React.FC = () => {
     <div className="space-y-3 w-full min-w-0 max-w-full">
       <audio ref={audioRef as React.RefObject<HTMLAudioElement>} onEnded={handleAudioEnded} className="hidden" />
 
+      {/* NOTE: Ye AI feature is app ka nahi hai - disabled */}
+
       <Card
         variant="green"
         padding={2}
@@ -243,20 +245,13 @@ export const TextToSpeechPanel: React.FC = () => {
       )}
 
       <Button
-        label={isGenerating ? "Generating..." : "Generate Speech"}
-        icon={
-          isGenerating ? (
-            <Loader2 size={14} className="animate-spin" aria-hidden />
-          ) : (
-            <Volume2 size={14} aria-hidden />
-          )
-        }
-        variant="primary"
+        label="Ye AI feature is app ka nahi hai (Disabled)"
+        icon={<Volume2 size={14} aria-hidden />}
+        variant="secondary"
         size="md"
-        onClick={generateSpeech}
-        isDisabled={isGenerating || !hasElevenLabsKey || !text.trim() || !selectedVoice || (enhanceText && !enhancedPreview)}
-        isLoading={isGenerating}
-        className="w-full"
+        onClick={() => {}}
+        isDisabled={true}
+        className="w-full opacity-60 cursor-not-allowed"
       />
 
       {hasUnsavedAudio && (

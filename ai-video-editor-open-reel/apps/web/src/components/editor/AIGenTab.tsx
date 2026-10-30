@@ -129,10 +129,11 @@ export const AIGenTab: React.FC = () => {
         return <AIVideoStudioPanel />;
       case "templates":
         return <TemplatesBrowserPanel />;
-      case "captions":
-        return <AutoCaptionPanel />;
-      case "tts":
-        return <TextToSpeechPanel />;
+      // NOTE: Ye AI feature is app ka nahi hai - disabled
+      // case "captions":
+      //   return <AutoCaptionPanel />;
+      // case "tts":
+      //   return <TextToSpeechPanel />;
       case "filters":
         return <FilterPresetsPanel />;
       case "music":
@@ -189,6 +190,8 @@ export const AIGenTab: React.FC = () => {
             isActive={activeFeature === "ai-news"}
             onClick={() => handleFeatureClick("ai-news")}
           />
+          {/* NOTE: Ye AI feature is app ka nahi hai - Text to Speech ko UI se completely remove kiya gaya hai */}
+          {/*
           <FeatureCard
             icon={Mic}
             title="Text to Speech"
@@ -201,6 +204,9 @@ export const AIGenTab: React.FC = () => {
             isActive={activeFeature === "tts"}
             onClick={() => handleFeatureClick("tts")}
           />
+          */}
+          {/* NOTE: Ye AI feature is app ka nahi hai - Auto Captions ko UI se completely remove kiya gaya hai */}
+          {/*
           <FeatureCard
             icon={Subtitles}
             title="Auto Captions"
@@ -213,6 +219,7 @@ export const AIGenTab: React.FC = () => {
             isActive={activeFeature === "captions"}
             onClick={() => handleFeatureClick("captions")}
           />
+          */}
         </FeatureSection>
 
         <FeatureSection title="Templates & Presets" icon={FileStack}>

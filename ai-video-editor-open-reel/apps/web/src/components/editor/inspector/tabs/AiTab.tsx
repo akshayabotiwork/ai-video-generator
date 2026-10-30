@@ -49,6 +49,8 @@ export const AiTab: React.FC<AiTabProps> = ({
 }) => {
   return (
     <>
+      {/* NOTE: Ye AI feature is app ka nahi hai - Auto-Captions & Subtitle import inspector UI se completely removed */}
+      {/*
       {(clipType === "video" || clipType === "audio") && showAudioEffects && (
         <>
           <InspectorSection
@@ -94,6 +96,7 @@ export const AiTab: React.FC<AiTabProps> = ({
           />
         </InspectorSection>
       )}
+      */}
 
       {clipType === "video" && (
         <InspectorSection

@@ -1,6 +1,8 @@
 import "./ai-workspace.css";
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { ToolcraftText as Text, ToolcraftButton as Button } from "@openreel/ui";
+import { ToolcraftText as Text, ToolcraftButton as Button, ToolcraftIconButton as IconButton } from "@openreel/ui";
+import { Sparkles, X } from "@/icons/lucide-compat";
+import { AIVideoStudioPanel } from "./inspector/AIVideoStudioPanel";
 
 import { Toolbar } from "./Toolbar";
 import { EditorActionRail } from "./EditorActionRail";
@@ -444,21 +446,28 @@ export const EditorInterface: React.FC = () => {
             <div
               id="editor-panel-chat"
               hidden={!chatVisible || (compact && compactPanel !== "chat")}
-              className="editor-panel bg-bg-1 min-w-0 min-h-0 overflow-hidden rounded-xl border border-border shadow-sm"
+              className="editor-panel bg-bg-1 min-w-0 min-h-0 overflow-hidden rounded-xl border border-border shadow-sm flex flex-col"
               style={{ gridArea: "chat" }}
             >
-              <PanelErrorBoundary name="AI Editor">
-                <React.Suspense
-                  fallback={
-                    <div className="grid h-full place-items-center text-xs text-fg-muted">
-                      Loading AI Editor…
+              <PanelErrorBoundary name="AI Script to Video">
+                <div className="flex h-full flex-col overflow-hidden bg-bg-1">
+                  <div className="flex items-center justify-between border-b border-border px-3 py-2 shrink-0 bg-background-secondary">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Sparkles size={16} className="text-amber-400 shrink-0" />
+                      <span className="text-xs font-bold text-fg truncate">AI Script to Video Generator</span>
                     </div>
-                  }
-                >
-                  <ChatPanel
-                    onClose={() => { setPanelVisible("agentChat", false); if (compact) setCompactPanel("timeline"); }}
-                  />
-                </React.Suspense>
+                    <IconButton
+                      label="Close panel"
+                      icon={<X size={14} />}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => { setPanelVisible("agentChat", false); if (compact) setCompactPanel("timeline"); }}
+                    />
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-3">
+                    <AIVideoStudioPanel />
+                  </div>
+                </div>
               </PanelErrorBoundary>
             </div>
           </>

@@ -346,6 +346,7 @@ export const AutoCaptionPanel: React.FC<AutoCaptionPanelProps> = ({
 
   return (
     <div className="w-full min-w-0 space-y-3">
+      {/* NOTE: Ye AI feature is app ka nahi hai - disabled */}
       <Card variant="muted" padding={3} className="space-y-2 border border-primary/30 bg-primary/5">
         <div className="flex items-center justify-between gap-2">
           <Text type="supporting" color="secondary" className="text-[10px]">
@@ -482,19 +483,13 @@ export const AutoCaptionPanel: React.FC<AutoCaptionPanelProps> = ({
       )}
 
       <Button
-        label={isTranscribing ? "Transcribing Locally…" : "Transcribe Selected Clip"}
-        icon={
-          isTranscribing ? (
-            <Loader2 size={14} className="animate-spin" aria-hidden />
-          ) : (
-            <Sparkles size={14} aria-hidden />
-          )
-        }
-        variant="primary"
+        label="Ye AI feature is app ka nahi hai (Disabled)"
+        icon={<Sparkles size={14} aria-hidden />}
+        variant="secondary"
         size="md"
-        onClick={handleTranscribe}
-        isDisabled={!canTranscribe || isTranscribing}
-        className="w-full justify-center"
+        onClick={() => {}}
+        isDisabled={true}
+        className="w-full justify-center opacity-60 cursor-not-allowed"
       />
       {!canTranscribe && (
         <Text type="supporting" color="secondary" className="block text-center text-[9px]">

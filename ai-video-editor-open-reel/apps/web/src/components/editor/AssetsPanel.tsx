@@ -341,6 +341,8 @@ const MediaThumbnail: React.FC<{
         </>
       ) : (
         <>
+          {/* NOTE: Ye AI feature is app ka nahi hai - KieAI image generation UI se completely removed */}
+          {/*
           {item.type === "image" && onKieAI && (
             <PanelIconButton
               label="Create with KieAI"
@@ -349,6 +351,7 @@ const MediaThumbnail: React.FC<{
               className="p-2 bg-primary/20 rounded-full hover:bg-primary/40 backdrop-blur-sm transition-colors"
             />
           )}
+          */}
           <PanelIconButton
             label="Add to timeline"
             icon={<Plus size={14} className="text-primary" />}
@@ -452,6 +455,8 @@ const MediaThumbnail: React.FC<{
               </>
             ) : (
               <>
+                {/* NOTE: Ye AI feature is app ka nahi hai - KieAI image generation UI se completely removed */}
+                {/*
                 {item.type === "image" && onKieAI && (
                   <PanelIconButton
                     label="Create with KieAI"
@@ -460,6 +465,7 @@ const MediaThumbnail: React.FC<{
                     className="p-1 bg-primary/20 rounded hover:bg-primary/40 transition-colors"
                   />
                 )}
+                */}
                 <PanelIconButton
                   label="Add to timeline"
                   icon={<Plus size={12} className="text-primary" />}
@@ -1603,6 +1609,8 @@ export const AssetsPanel: React.FC = () => {
         />
       )}
 
+      {/* NOTE: Ye AI feature is app ka nahi hai - KieAI dialog UI se completely removed */}
+      {/*
       {kieaiDialog && (
         <KieAIImageDialog
           open={true}
@@ -1611,6 +1619,7 @@ export const AssetsPanel: React.FC = () => {
           previewUrl={kieaiDialog.previewUrl}
         />
       )}
+      */}
     </div>
   );
 };

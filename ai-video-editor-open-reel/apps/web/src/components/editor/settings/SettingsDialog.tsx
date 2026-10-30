@@ -14,7 +14,8 @@ const isDesktop =
 
 const TABS: readonly { id: SettingsTab; label: string; icon: typeof Settings }[] = [
   { id: "general", label: "General", icon: Settings },
-  { id: "ai-editor", label: "AI Editor", icon: Bot },
+  /* NOTE: Ye AI feature is app ka nahi hai - AI Editor Chat settings UI se removed */
+  // { id: "ai-editor", label: "AI Editor", icon: Bot },
   { id: "api-keys", label: "API Keys", icon: Key },
   ...(isDesktop
     ? [{ id: "mcp" as const, label: "MCP", icon: Plug }]
@@ -86,7 +87,8 @@ export const SettingsDialog: React.FC = () => {
               className="mt-4"
             >
               {settingsTab === "general" && <GeneralPanel />}
-              {settingsTab === "ai-editor" && <AISettingsPanel />}
+              {/* NOTE: Ye AI feature is app ka nahi hai - AI Editor Chat panel removed from UI */}
+              {/* {settingsTab === "ai-editor" && <AISettingsPanel />} */}
               {settingsTab === "api-keys" && <ApiKeysPanel />}
               {settingsTab === "mcp" && <McpPanel />}
             </div>

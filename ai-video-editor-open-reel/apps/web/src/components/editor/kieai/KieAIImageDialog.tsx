@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { AlertCircle } from "@/icons/lucide-compat";
 import { v4 as uuidv4 } from "uuid";
 import { ToolcraftButton as Button } from "@openreel/ui";
 import { ToolcraftCard as Card } from "@openreel/ui";
@@ -103,10 +104,9 @@ export function KieAIImageDialog({ open, onClose, sourceFile, previewUrl }: Prop
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (!selectedModel || !project) return;
-
-    setStep("submitting");
-    setErrorMsg("");
+    setErrorMsg("Ye AI feature is app ka nahi hai. Is feature ko disable kiya gaya hai.");
+    setStep("error");
+    return;
 
     const ac = new AbortController();
     abortRef.current = ac;
@@ -233,6 +233,7 @@ export function KieAIImageDialog({ open, onClose, sourceFile, previewUrl }: Prop
         header={<DialogHeader title={title} onOpenChange={(nextOpen) => !nextOpen && handleClose()} />}
         content={
           <LayoutContent className="max-h-[70vh] overflow-y-auto">
+            {/* NOTE: Ye AI feature is app ka nahi hai - disabled */}
           {/* Source image preview strip */}
           {(
             <Card variant="muted" padding={2} className="mb-4">
