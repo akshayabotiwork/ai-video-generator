@@ -41,3 +41,7 @@ scratch_test.mp3
 studio-deprecated*
 web_studio-deprecated*
 
+
+# Agent & Local Secrets
+.agents/
+skills-lock.json
