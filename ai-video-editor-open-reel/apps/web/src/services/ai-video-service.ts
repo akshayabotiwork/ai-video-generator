@@ -531,35 +531,6 @@ export async function generateAndLoadAIStory(
     const hTrackId = headlinesTrack?.id;
     const sTrackId = subtitlesTrack?.id;
 
-    // Ingest Master Voiceover Audio Track (Single continuous master voiceover track)
-    const masterVoPath =
-      aiProject.master_audio_path ||
-      (scenes.length > 0 &&
-      scenes.every(
-        (s) => s.local_audio_path && s.local_audio_path === scenes[0]?.local_audio_path,
-      )
-        ? scenes[0]?.local_audio_path
-        : null);
-
-    if (masterVoPath && aTrackId) {
-      onProgress?.("Importing continuous master voiceover track...");
-      const audioUrl = toStorageUrl(masterVoPath);
-      const file = await fetchAsFile(audioUrl, "master_voiceover.mp3", "audio/mpeg");
-      if (file) {
-        const importRes = await projectStore.importMedia(file);
-        if (importRes.success) {
-          const mediaId =
-            (importRes as any)?.actionId ||
-            useProjectStore
-              .getState()
-              .project.mediaLibrary.items.find((m) => m.name === file.name)?.id;
-          if (mediaId) {
-            await projectStore.addClip(aTrackId, mediaId, 0);
-          }
-        }
-      }
-    }
-
     // 3. Gapless Contiguous Timeline Ingestion with Multi-Shot Subdivisions
     const maxShotDur = Math.max(1.5, params.max_shot_duration || aiProject.max_shot_duration || 3.0);
     const addedVisualClips: Array<{ clipId: string; sceneIndex: number; shotIndex: number; startTime: number; duration: number }> = [];
@@ -686,7 +657,7 @@ export async function generateAndLoadAIStory(
             const mediaItem = useProjectStore
               .getState()
               .project.mediaLibrary.items.find((m) => m.name === file.name);
-            const mediaId = mediaItem?.id;
+            const mediaId = (importRes as any)?.actionId || mediaItem?.id;
             if (mediaId) {
               await projectStore.addClip(aTrackId, mediaId, sceneStart);
             }
@@ -843,7 +814,7 @@ export async function generateAndLoadAIStory(
             const mediaItem = useProjectStore
               .getState()
               .project.mediaLibrary.items.find((m) => m.name === file.name);
-            const mediaId = mediaItem?.id;
+            const mediaId = (importRes as any)?.actionId || mediaItem?.id;
             if (mediaId) {
               const addRes = await projectStore.addClip(mTrackId, mediaId, 0);
               const mClipId = (addRes as any)?.actionId;

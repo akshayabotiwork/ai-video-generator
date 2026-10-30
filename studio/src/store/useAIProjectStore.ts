@@ -549,7 +549,7 @@ export const useAIProjectStore = create<AIProjectState>()(
         }
 
         // 2. Audio TTS clip on A1 (Seamless contiguous placement without gaps)
-        const audioUrl = toMediaUrl(sc.local_audio_path || proj.master_audio_path)
+        const audioUrl = toMediaUrl(sc.local_audio_path)
         if (audioUrl) {
           mediaStore.addAsset({
             id: `scene-aud-${sc.scene_id}`,
@@ -560,13 +560,6 @@ export const useAIProjectStore = create<AIProjectState>()(
             addedAt: new Date().toISOString(),
           })
 
-          const normLocal = sc.local_audio_path ? toMediaUrl(sc.local_audio_path) : ''
-          const normMaster = proj.master_audio_path ? toMediaUrl(proj.master_audio_path) : ''
-          const isMaster = Boolean(
-            (normMaster && normLocal && normLocal === normMaster) ||
-            (!normLocal && normMaster) ||
-            (audioUrl && (audioUrl.includes('master_narration') || audioUrl.includes('master_audio') || audioUrl.includes('master_synchronized')))
-          )
           newAClips.push({
             id: `clip-a-${sc.scene_id}`,
             trackId: aTrack.id,
@@ -575,9 +568,9 @@ export const useAIProjectStore = create<AIProjectState>()(
             src: audioUrl,
             startTime: start,
             duration: duration,
-            fileStart: isMaster ? start : 0,
-            fileEnd: isMaster ? end : duration,
-            originalDuration: isMaster ? (proj.total_timeline_duration || 30) : duration,
+            fileStart: 0,
+            fileEnd: duration,
+            originalDuration: duration,
             volume: 1,
             fadeIn: 0.05,
             fadeOut: 0.05,

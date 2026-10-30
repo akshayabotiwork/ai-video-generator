@@ -2,26 +2,19 @@ import os
 import shutil
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # ==============================================================================
-# 🔑 API KEYS & CREDENTIALS (Direct Configuration)
+# 🔑 API KEYS & CREDENTIALS (Loaded from .env or environment)
 # ==============================================================================
-# અહીં સીધી તમારી API Keys કોટ્સ ("") ની અંદર પેસ્ટ કરો:
-
-# 1. SERP API KEY (Google Images & Videos Visual Search માટે)
-#    👉 Get Key from: https://serpapi.com/manage-api-key
-# SERPAPI_API_KEY = "63b56b92d343096c9b20081e5c88e758cdfcb510ce83b6255f5bf4f705d2e43d"
-SERPAPI_API_KEY = "1ac4f52eb84677ab7cfeb32ba9aaa444e3972f91496d7d05492304371c1f7b95"
-
-# 2. GOOGLE GEMINI API KEY (Optional - AI Script Parsing & Director માટે)
-#    👉 Get Free Key from: https://aistudio.google.com/app/apikey
-GEMINI_API_KEY = "AQ.Ab8RN6IFMlMxEfYZRcJz46ej_hoSr0hr9YDXTCikhFad1uwZlw"
-
-# 3. OPENAI API KEY (Optional - OpenAI GPT-4o વાપરવું હોય તો)
-#    👉 Get Key from: https://platform.openai.com/api-keys
-OPENAI_API_KEY = ""
-
-# 4. CUSTOM FFMPEG PATH (જો સિસ્ટમમાં કસ્ટમ FFmpeg હોય તો, બાકી ખાલી રાખો - ઓટો શોધી લેશે)
-CUSTOM_FFMPEG_PATH = ""
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY", "")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+CUSTOM_FFMPEG_PATH = os.getenv("CUSTOM_FFMPEG_PATH", "")
 
 
 # ==============================================================================

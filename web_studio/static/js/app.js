@@ -319,27 +319,28 @@ function renderNLETimeline() {
     }
   });
 
-  // Track A1: CONTINUOUS MASTER AUDIO VOICEOVER (One Unbroken Waveform Track)
-  const masterAudioBlock = document.createElement("div");
-  masterAudioBlock.className = "nle-master-audio-block";
-  masterAudioBlock.style.width = `${totalTrackWidth - 20}px`;
-  masterAudioBlock.innerHTML = `
-    <span style="font-size:11px; font-weight:700; white-space:nowrap; z-index:2;">🎙️ Master Continuous Narration</span>
-    <div class="waveform-container" id="nleWaveformBar"></div>
-    <span style="font-size:10px; font-family:var(--font-mono); z-index:2;">${totalDur.toFixed(1)}s</span>
-  `;
-  laneA1.appendChild(masterAudioBlock);
+  // Track A1: SCENE AUDIO CLIPS
+  currentProject.scenes.forEach((sc, idx) => {
+    const isLast = idx === currentProject.scenes.length - 1;
+    const dur = sc.audio_duration || (sc.timeline_end - sc.timeline_start) || 4;
+    const clipPx = Math.max(Math.round(dur * PX_PER_SEC), 100);
 
-  // Generate Simulated Natural Waveform Bars
-  const waveContainer = document.getElementById("nleWaveformBar");
-  const waveCount = Math.min(Math.round(totalDur * 16), 180);
-  for (let i = 0; i < waveCount; i++) {
-    const bar = document.createElement("div");
-    bar.className = "wave-bar";
-    const height = Math.floor(Math.sin(i * 0.3) * 6 + 10);
-    bar.style.height = `${height}px`;
-    waveContainer.appendChild(bar);
-  }
+    const audioBlock = document.createElement("div");
+    audioBlock.className = "nle-master-audio-block";
+    audioBlock.style.width = `${clipPx}px`;
+    audioBlock.title = `Scene ${sc.scene_id} Audio (${dur.toFixed(1)}s)`;
+    audioBlock.innerHTML = `
+      <span style="font-size:11px; font-weight:700; white-space:nowrap; z-index:2;">🎙️ Scene ${sc.scene_id} VO</span>
+      <span style="font-size:10px; font-family:var(--font-mono); z-index:2;">${dur.toFixed(1)}s</span>
+    `;
+    laneA1.appendChild(audioBlock);
+
+    if (!isLast) {
+      const spacer = document.createElement("div");
+      spacer.style.width = "64px";
+      laneA1.appendChild(spacer);
+    }
+  });
 
   // Track A2: Ambient Background Music Bed
   const musicBlock = document.createElement("div");

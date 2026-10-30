@@ -127,35 +127,29 @@ class NewsVideoPipeline:
         return project
 
     def generate_narration_for_project(self, project: VideoProject) -> VideoProject:
-        """Step 3: Synthesizes ONE continuous, consistent master voiceover for the entire script."""
-        scenes_texts = [s.narration_text for s in project.scenes]
-        system_logger.info("TTS", f"Synthesizing voiceover with voice '{project.voice}' for {len(scenes_texts)} scenes...")
-        master_audio, total_duration, intervals, scene_words = self.tts.generate_full_narration(
-            full_text=project.raw_script,
-            scenes_texts=scenes_texts,
-            voice=project.voice
-        )
-        project.master_audio_path = master_audio
-        project.total_timeline_duration = total_duration
+        """Step 3: Synthesizes individual scene voiceover audio and timestamps for each scene."""
+        system_logger.info("TTS", f"Synthesizing voiceover with voice '{project.voice}' for {len(project.scenes)} scenes...")
+        running_timeline = 0.0
 
-        for idx, scene in enumerate(project.scenes):
-            if idx < len(intervals):
-                st, en = intervals[idx]
-            else:
-                st = round((idx / len(project.scenes)) * total_duration, 3)
-                en = round(((idx + 1) / len(project.scenes)) * total_duration, 3)
+        for scene in project.scenes:
+            audio_path, duration, word_times = self.tts.generate_speech(
+                text=scene.narration_text,
+                scene_id=scene.scene_id,
+                voice=project.voice
+            )
+            scene.local_audio_path = audio_path
+            scene.audio_duration = round(duration, 3)
+            scene.timeline_start = round(running_timeline, 3)
+            scene.timeline_end = round(running_timeline + duration, 3)
+            scene.word_timestamps = word_times
+            running_timeline = scene.timeline_end
 
-            scene.timeline_start = st
-            scene.timeline_end = en
-            scene.audio_duration = round(en - st, 3)
-            scene.local_audio_path = master_audio
-            if idx < len(scene_words):
-                scene.word_timestamps = scene_words[idx]
-
+        project.total_timeline_duration = round(running_timeline, 3)
+        project.master_audio_path = None
         project.progress_percent = 70
         system_logger.success(
             "TTS",
-            f"Voiceover synthesized: Total duration {total_duration:.2f}s, {len(intervals)} scene timing windows locked."
+            f"All {len(project.scenes)} scenes synthesized. Total timeline duration: {project.total_timeline_duration:.2f}s."
         )
         return project
 
